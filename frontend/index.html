@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
+<title>StackMatch – Smart Question Recommendation for Developers</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg:       #080c14;
+  --bg2:      #0d1220;
+  --bg3:      #121929;
+  --card:     #0f1724;
+  --border:   #1c2a3e;
+  --accent:   #38bdf8;
+  --accent2:  #818cf8;
+  --accent3:  #34d399;
+  --warn:     #fbbf24;
+  --danger:   #f87171;
+  --text:     #f1f5f9;
+  --text2:    #cbd5e1;
+  --muted:    #64748b;
+  --code-bg:  #0d1117;
+  --shadow:   rgba(0,0,0,.5);
+  --pill-bg:  #1a2640;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg:       #f0f4f8;
+  --bg2:      #e2e8f0;
+  --bg3:      #dde3ec;
+  --card:     #ffffff;
+  --border:   #cbd5e1;
+  --accent:   #0284c7;
+  --accent2:  #6366f1;
+  --accent3:  #059669;
+  --warn:     #d97706;
+  --danger:   #dc2626;
+  --text:     #0f172a;
+  --text2:    #1e293b;
+  --muted:    #64748b;
+  --code-bg:  #f8fafc;
+  --shadow:   rgba(0,0,0,.12);
+  --pill-bg:  #e2e8f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; transition: background-color .25s, color .25s, border-color .25s; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Grid texture - dark only */
+[data-theme="dark"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="dark"] .orb { display: block; }
+[data-theme="light"] .orb { display: none; }
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(130px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb1 { width:500px;height:500px;background:rgba(56,189,248,.06);top:-150px;right:-80px; }
+.orb2 { width:400px;height:400px;background:rgba(129,140,248,.06);bottom:-80px;left:-80px; }
+
+/* ── NAVBAR ── */
+.navbar-custom {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: .85rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px var(--shadow);
+}
+[data-theme="dark"] .navbar-custom { background: rgba(8,12,20,.9); backdrop-filter: blur(20px); }
+
+.brand {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent) !important;
+  text-decoration: none;
+  letter-spacing: -1px;
+}
+.brand span { color: var(--text); }
+.nav-badge {
+  font-size: .6rem;
+  background: var(--accent2);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 20px;
+  vertical-align: middle;
+  margin-left: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  background: var(--pill-bg);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 5px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text2);
+  transition: all .2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  padding: 4rem 0 2.5rem;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: var(--accent);
+  border: 1px solid rgba(56,189,248,.35);
+  background: rgba(56,189,248,.07);
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 1.4rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+.hero h1 .hl {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 1.05rem;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 2.2rem;
+  font-weight: 500;
+}
+
+/* ── STATS ── */
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+}
+.stat-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+/* ── SEARCH CARD ── */
+.search-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.8rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 40px var(--shadow);
+}
+[data-theme="dark"] .search-card { box-shadow: 0 0 60px rgba(56,189,248,.04); }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: .7rem;
+  font-weight: 600;
+}
+
+/* Tags */
+.tag-grid { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 1.4rem; }
+.tag-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--pill-bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .18s;
+  user-select: none;
+  font-weight: 500;
+}
+.tag-pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,.08); }
+.tag-pill.active { background: rgba(56,189,248,.14); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+/* Input */
+.query-wrap { position: relative; margin-bottom: 1.1rem; }
+.query-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: .9rem 3rem .9rem 1.1rem;
+  resize: none;
+  min-height: 78px;
+  transition: border-color .2s, box-shadow .2s;
+  outline: none;
+  line-height: 1.6;
+}
+.query-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,.12); }
+.query-input::placeholder { color: var(--muted); font-weight: 400; }
+.clear-btn {
+  position: absolute; top: .7rem; right: .75rem;
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: .95rem; transition: color .2s; padding: 4px;
+}
+.clear-btn:hover { color: var(--danger); }
+
+/* Slider */
+.topk-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
+.topk-row label { font-size: .82rem; color: var(--text2); white-space: nowrap; font-weight: 600; }
+.topk-slider { flex: 1; accent-color: var(--accent); cursor: pointer; }
+.topk-val { font-family: 'JetBrains Mono', monospace; font-size: .88rem; color: var(--accent); min-width: 20px; text-align: center; font-weight: 700; }
+
+/* Button */
+.btn-search {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: .95rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .25s;
+  letter-spacing: .2px;
+}
+.btn-search:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(56,189,248,.3); }
+.btn-search:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ── RESULTS ── */
+.results-section { position: relative; z-index: 1; }
+
+.result-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem;
+  margin-bottom: 1rem;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  animation: slideUp .35s ease both;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+.result-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px var(--shadow); }
+
+.result-rank {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  margin-bottom: .6rem;
+}
+.rank-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; font-weight: 700;
+  background: rgba(56,189,248,.12);
+  border: 1px solid rgba(56,189,248,.25);
+  color: var(--accent);
+  padding: 2px 9px; border-radius: 6px;
+}
+.vote-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; font-weight: 600;
+  color: var(--accent3);
+  background: rgba(52,211,153,.1);
+  border: 1px solid rgba(52,211,153,.2);
+  padding: 2px 9px; border-radius: 6px;
+}
+.fusion-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; color: var(--muted);
+}
+
+.result-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: .9rem;
+  line-height: 1.45;
+}
+
+/* Score bars */
+.score-bars { display: flex; gap: .7rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.score-bar-item { flex: 1; min-width: 90px; }
+.score-bar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem; color: var(--muted);
+  display: flex; justify-content: space-between;
+  margin-bottom: 4px; font-weight: 500;
+}
+.score-bar-track { height: 5px; background: var(--bg3); border-radius: 5px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 5px; transition: width 1.2s ease; }
+.fill-fusion { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.fill-tfidf  { background: var(--warn); }
+.fill-sbert  { background: var(--accent3); }
+
+/* Answer */
+.answer-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  font-size: .9rem;
+  line-height: 1.75;
+  color: var(--text2);
+  max-height: 180px;
+  overflow-y: auto;
+  font-weight: 400;
+}
+.answer-block.expanded { max-height: none; }
+.answer-block::-webkit-scrollbar { width: 4px; }
+.answer-block::-webkit-scrollbar-track { background: transparent; }
+.answer-block::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.answer-block code {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: .82rem;
+  color: var(--accent);
+}
+.answer-block pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .9rem 1rem;
+  margin: .7rem 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Action buttons */
+.card-actions { display: flex; gap: .4rem; margin-top: 1rem; flex-wrap: wrap; }
+.btn-action {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem; font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--pill-bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .18s;
+  display: flex; align-items: center; gap: 5px;
+}
+.btn-action:hover { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,.08); }
+.btn-action.active { background: rgba(56,189,248,.12); border-color: var(--accent); color: var(--accent); }
+
+/* Translate panel */
+.translate-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: .8rem;
+  display: none;
+}
+.translate-panel.show { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+.lang-select {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 6px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  outline: none;
+  cursor: pointer;
+}
+.lang-select:focus { border-color: var(--accent); }
+
+.translated-output {
+  margin-top: .8rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .9rem 1rem;
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.translate-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+  margin-top: .5rem;
+}
+
+/* ── SIDEBAR ── */
+.sidebar-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 16px var(--shadow);
+}
+.sidebar-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 7px;
+}
+.history-item {
+  padding: .5rem .6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .83rem; font-weight: 500;
+  color: var(--muted);
+  border: 1px solid transparent;
+  margin-bottom: .3rem;
+  transition: all .18s;
+  display: flex; align-items: flex-start; gap: 7px;
+}
+.history-item:hover { background: var(--bg3); border-color: var(--border); color: var(--text2); }
+.history-tag-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; font-weight: 700;
+  background: rgba(56,189,248,.1);
+  border: 1px solid rgba(56,189,248,.2);
+  color: var(--accent);
+  padding: 1px 7px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.random-q {
+  padding: .55rem .7rem;
+  border-radius: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-size: .82rem; font-weight: 500;
+  color: var(--muted);
+  margin-bottom: .4rem;
+  cursor: pointer;
+  transition: all .18s;
+  line-height: 1.45;
+}
+.random-q:hover { border-color: var(--accent); color: var(--text2); }
+.random-q-tag { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:var(--accent); font-weight:700; }
+
+/* ── EMPTY / LOADING ── */
+.empty-state { text-align: center; padding: 3.5rem 2rem; color: var(--muted); }
+.empty-state i { font-size: 2.8rem; margin-bottom: 1rem; opacity: .25; display: block; }
+.empty-state p { font-size: .92rem; font-weight: 500; }
+
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  vertical-align: middle;
+}
+[data-theme="light"] .spinner { border-color: rgba(0,0,0,.15); border-top-color: #fff; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOAST ── */
+.toast-wrap { position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999; display:flex; flex-direction:column; gap:.5rem; }
+.toast-msg {
+  background: var(--card);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-size: .82rem; font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  padding: .65rem 1.1rem;
+  border-radius: 10px;
+  animation: slideUp .3s ease;
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+/* ── HOW IT WORKS ── */
+.how-step { display:flex; align-items:flex-start; gap:.7rem; margin-bottom:.6rem; font-size:.83rem; font-weight:500; color:var(--text2); }
+.how-num { font-family:'JetBrains Mono',monospace; font-size:.68rem; font-weight:700; color:#fff; background:var(--accent); min-width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.8rem 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: .8rem; font-weight: 500;
+  position: relative; z-index: 1;
+  margin-top: 3.5rem;
+}
+.brand-foot { font-family:'JetBrains Mono',monospace; color:var(--accent); font-weight:700; display:block; margin-bottom:.3rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hero { padding: 2.5rem 0 1.5rem; }
+  .stats-bar { gap: 1.2rem; }
+  .search-card { padding: 1.1rem; }
+  .score-bars { flex-direction: column; }
+  .card-actions { gap: .3rem; }
+  .btn-action { font-size: .65rem; padding: 4px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar-custom">
+  <div class="container d-flex align-items-center justify-content-between gap-2">
+    <a class="brand" href="#">Stack<span>Match</span><span class="nav-badge">BETA</span></a>
+    <div class="d-flex align-items-center gap-2">
+      <span id="navStatus" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:5px;">
+        <i class="fa-solid fa-circle" style="color:var(--accent3);font-size:.45rem;"></i> API Connected
+      </span>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+        <i class="fa-solid fa-moon" id="themeIcon"></i>
+        <span id="themeLabel">Dark</span>
+      </button>
+      <button class="btn-action" onclick="loadRandom()" title="Shuffle questions">
+        <i class="fa-solid fa-shuffle"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag">AI-Powered &nbsp;·&nbsp; Hybrid Search &nbsp;·&nbsp; 20 Languages</div>
+    <h1>Smart Q&amp;A for<br/><span class="hl">Developers</span></h1>
+    <p>Find the most relevant Stack Overflow answers using semantic AI search, filtered by your programming language.</p>
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-item"><span class="stat-num" id="statTotal">–</span><span class="stat-label">Questions</span></div>
+      <div class="stat-item"><span class="stat-num" id="statTags">20</span><span class="stat-label">Languages</span></div>
+      <div class="stat-item"><span class="stat-num" id="statAvg">–</span><span class="stat-label">Avg Score</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main class="container pb-5" style="position:relative;z-index:1;">
+  <div class="row g-4">
+
+    <!-- LEFT: Search -->
+    <div class="col-lg-8">
+      <div class="search-card mb-4">
+        <div class="section-label"><i class="fa-solid fa-tag me-1"></i>Step 1 — Select Language</div>
+        <div class="tag-grid" id="tagGrid"></div>
+
+        <div class="section-label"><i class="fa-solid fa-keyboard me-1"></i>Step 2 — Your Question</div>
+        <div class="query-wrap">
+          <textarea class="query-input" id="queryInput" rows="3"
+            placeholder="Type your question in any language… e.g. 'bagaimana cara koneksi python ke database mysql'"></textarea>
+          <button class="clear-btn" onclick="clearQuery()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="topk-row">
+          <label><i class="fa-solid fa-list-ol me-1"></i> Results</label>
+          <input type="range" class="topk-slider" id="topkSlider" min="1" max="10" value="5"
+            oninput="document.getElementById('topkVal').textContent=this.value"/>
+          <span class="topk-val" id="topkVal">5</span>
+        </div>
+
+        <button class="btn-search" id="searchBtn" onclick="doSearch()">
+          <i class="fa-solid fa-magnifying-glass me-2"></i>Find Answers
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;opacity:.7;margin-left:8px;">(Ctrl+Enter)</span>
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div id="resultsSection">
+        <div class="empty-state">
+          <i class="fa-solid fa-code-branch"></i>
+          <p>Select a language and enter your question to find answers.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Sidebar -->
+    <div class="col-lg-4">
+
+      <div class="sidebar-card">
+        <div class="sidebar-title"><i class="fa-solid fa-clock-rotate-left"></i> Search History</div>
+        <div id="historyList"><p style="font-size:.8rem;color:var(--muted);font-weight:500;">No searches yet.</p></div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">
+          <i class="fa-solid fa-shuffle"></i> Question Explorer
+          <button class="btn-action ms-auto" onclick="loadRandom()" style="padding:3px 9px;">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </div>
+        <div id="randomList"><p style="font-size:.8rem;color:var(--muted);">Loading…</p></div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title"><i class="fa-solid fa-brain"></i> How It Works</div>
+        <div class="how-step"><div class="how-num">01</div><div>Query auto-translated to English if needed</div></div>
+        <div class="how-step"><div class="how-num" style="background:var(--warn);">02</div><div>TF-IDF keyword matching <strong>(40%)</strong></div></div>
+        <div class="how-step"><div class="how-num" style="background:var(--accent3);">03</div><div>SBERT semantic embedding <strong>(50%)</strong></div></div>
+        <div class="how-step"><div class="how-num" style="background:var(--accent2);">04</div><div>Answer vote score re-ranking <strong>(10%)</strong></div></div>
+        <div class="how-step"><div class="how-num" style="background:var(--text);color:var(--bg);">→</div><div>Fusion score selects best answers</div></div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title"><i class="fa-solid fa-chart-bar"></i> Top Languages</div>
+        <div id="topTagsChart"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<footer>
+  <div class="container">
+    <span class="brand-foot">StackMatch</span>
+    Smart Question Recommendation for Developers &nbsp;·&nbsp; SBERT + TF-IDF Hybrid Search
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+const API = '';
+let selectedTag   = null;
+let searchHistory = JSON.parse(localStorage.getItem('sm_history') || '[]');
+
+const LANG_OPTIONS = [
+  {code:'id',label:'🇮🇩 Indonesian'},{code:'es',label:'🇪🇸 Spanish'},
+  {code:'fr',label:'🇫🇷 French'},{code:'de',label:'🇩🇪 German'},
+  {code:'zh-CN',label:'🇨🇳 Chinese'},{code:'ja',label:'🇯🇵 Japanese'},
+  {code:'ko',label:'🇰🇷 Korean'},{code:'pt',label:'🇧🇷 Portuguese'},
+  {code:'ar',label:'🇸🇦 Arabic'},{code:'ru',label:'🇷🇺 Russian'},
+  {code:'it',label:'🇮🇹 Italian'},{code:'tr',label:'🇹🇷 Turkish'},
+];
+
+// ── THEME ────────────────────────────────────────────────────────────────────
+const savedTheme = localStorage.getItem('sm_theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+updateThemeBtn(savedTheme);
+
+function toggleTheme() {
+  const cur  = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('sm_theme', next);
+  updateThemeBtn(next);
+}
+function updateThemeBtn(theme) {
+  const icon  = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  if (!icon) return;
+  if (theme === 'dark') {
+    icon.className  = 'fa-solid fa-moon';
+    label.textContent = 'Dark';
+  } else {
+    icon.className  = 'fa-solid fa-sun';
+    label.textContent = 'Light';
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  await Promise.all([loadTags(), loadStats(), loadRandom()]);
+  renderHistory();
+}
+
+async function loadTags() {
+  try {
+    const r = await fetch(`${API}/api/tags`);
+    const d = await r.json();
+    renderTagGrid(d.tags);
+    renderTopTags(d.tags);
+  } catch(e) { showToast('⚠ Could not connect to API'); }
+}
+
+async function loadStats() {
+  try {
+    const r = await fetch(`${API}/api/stats`);
+    const d = await r.json();
+    document.getElementById('statTotal').textContent = d.total_questions.toLocaleString();
+    document.getElementById('statAvg').textContent   = d.avg_answer_score;
+  } catch(e) {}
+}
+
+async function loadRandom() {
+  const tag = selectedTag;
+  const url = tag ? `${API}/api/random?tag=${tag}&n=4` : `${API}/api/random?n=4`;
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    document.getElementById('randomList').innerHTML = d.questions.map(q => `
+      <div class="random-q" onclick="fillQuery('${escAttr(q.title)}','${q.tags}')">
+        <span class="random-q-tag">[${q.tags}]</span> ${escHtml(q.title)}
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('randomList').innerHTML = '<p style="font-size:.8rem;color:var(--muted);">Unavailable</p>';
+  }
+}
+
+// ── TAG GRID ─────────────────────────────────────────────────────────────────
+function renderTagGrid(tags) {
+  document.getElementById('tagGrid').innerHTML = tags.map(t => `
+    <div class="tag-pill" data-tag="${t.name}" onclick="selectTag('${t.name}')">
+      ${t.name} <span style="opacity:.45;font-size:.62rem;">${t.count}</span>
+    </div>`).join('');
+}
+function selectTag(tag) {
+  selectedTag = tag;
+  document.querySelectorAll('.tag-pill').forEach(p => p.classList.toggle('active', p.dataset.tag === tag));
+  loadRandom();
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+async function doSearch() {
+  const query = document.getElementById('queryInput').value.trim();
+  const topk  = parseInt(document.getElementById('topkSlider').value);
+  if (!query)       { showToast('⚠ Please enter a question'); return; }
+  if (!selectedTag) { showToast('⚠ Please select a language tag'); return; }
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Searching…';
+
+  const section = document.getElementById('resultsSection');
+  section.innerHTML = '<div class="text-center py-5"><span class="spinner" style="width:30px;height:30px;border-width:3px;"></span></div>';
+
+  try {
+    const res  = await fetch(`${API}/api/search`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({query, tag: selectedTag, top_k: topk})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Search failed');
+    addHistory(query, selectedTag, data.results.length);
+    renderResults(data);
+  } catch(e) {
+    section.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${escHtml(e.message)}</p></div>`;
+    showToast('❌ ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-magnifying-glass me-2"></i>Find Answers <span style="font-family:\'JetBrains Mono\',monospace;font-size:.72rem;opacity:.7;margin-left:8px;">(Ctrl+Enter)</span>';
+  }
+}
+
+function renderResults(data) {
+  const section = document.getElementById('resultsSection');
+  if (!data.results.length) {
+    section.innerHTML = '<div class="empty-state"><i class="fa-solid fa-face-frown"></i><p>No results found for this tag.</p></div>';
+    return;
+  }
+  const tr = data.results[0]?.translated_query;
+  let html = `<div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div style="font-size:.85rem;font-weight:600;">
+      <span style="color:var(--muted);">${data.results.length} results · </span>
+      <span style="color:var(--accent);">"${escHtml(data.query)}"</span>
+      ${tr && tr !== data.query ? `<span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);"> → "${escHtml(tr)}"</span>` : ''}
+    </div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);">tag: ${data.tag}</span>
+  </div>`;
+
+  data.results.forEach((r, i) => {
+    const safeAnswer = escHtml(r.answer);
+    html += `
+    <div class="result-card" style="animation-delay:${i*0.06}s;">
+      <div class="result-rank">
+        <span class="rank-num">#${i+1}</span>
+        <span class="vote-badge">&#9733; ${r.answer_score} votes</span>
+        <span class="fusion-badge">score: ${r.fusion_score}</span>
+      </div>
+      <div class="result-title">${escHtml(r.title)}</div>
+
+      <div class="score-bars">
+        <div class="score-bar-item">
+          <div class="score-bar-label"><span>Fusion</span><span>${(r.fusion_score*100).toFixed(1)}%</span></div>
+          <div class="score-bar-track"><div class="score-bar-fill fill-fusion" style="width:${r.fusion_score*100}%"></div></div>
+        </div>
+        <div class="score-bar-item">
+          <div class="score-bar-label"><span>TF-IDF</span><span>${(r.tfidf_score*100).toFixed(1)}%</span></div>
+          <div class="score-bar-track"><div class="score-bar-fill fill-tfidf" style="width:${r.tfidf_score*100}%"></div></div>
+        </div>
+        <div class="score-bar-item">
+          <div class="score-bar-label"><span>SBERT</span><span>${(r.sbert_score*100).toFixed(1)}%</span></div>
+          <div class="score-bar-track"><div class="score-bar-fill fill-sbert" style="width:${r.sbert_score*100}%"></div></div>
+        </div>
+      </div>
+
+      <div class="answer-block" id="ans-${i}">${formatAnswer(r.answer)}</div>
+
+      <div class="card-actions">
+        <button class="btn-action" onclick="toggleExpand(${i})"><i class="fa-solid fa-expand"></i> Expand</button>
+        <button class="btn-action" onclick="copyAnswer(${i}, this)"><i class="fa-solid fa-copy"></i> Copy</button>
+        <button class="btn-action" onclick="toggleTranslate(${i})" id="trbtn-${i}"><i class="fa-solid fa-language"></i> Translate</button>
+      </div>
+
+      <div class="translate-panel" id="trpanel-${i}">
+        <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+          <select class="lang-select" id="trlang-${i}">
+            ${LANG_OPTIONS.map(l=>`<option value="${l.code}">${l.label}</option>`).join('')}
+          </select>
+          <button class="btn-action" onclick="doTranslate(${i})" id="trdoBtn-${i}">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i> Translate
+          </button>
+          <span id="trload-${i}" style="display:none;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);">
+            <span class="spinner" style="width:14px;height:14px;border-width:2px;border-top-color:var(--accent);border-color:var(--border);"></span> translating…
+          </span>
+        </div>
+        <div class="translated-output" id="trout-${i}" style="display:none;"></div>
+        <div class="translate-status" id="trstatus-${i}"></div>
+      </div>
+    </div>`;
+  });
+
+  section.innerHTML = html;
+  // Store answers for translate (avoid re-escaping issues)
+  window._answers = data.results.map(r => r.answer);
+}
+
+// ── TRANSLATE — chunk long answers ───────────────────────────────────────────
+function toggleTranslate(i) {
+  const panel = document.getElementById(`trpanel-${i}`);
+  const btn   = document.getElementById(`trbtn-${i}`);
+  panel.classList.toggle('show');
+  btn.classList.toggle('active');
+}
+
+async function doTranslate(i) {
+  const lang    = document.getElementById(`trlang-${i}`).value;
+  const load    = document.getElementById(`trload-${i}`);
+  const out     = document.getElementById(`trout-${i}`);
+  const status  = document.getElementById(`trstatus-${i}`);
+  const doBtn   = document.getElementById(`trdoBtn-${i}`);
+  const rawText = window._answers?.[i] || '';
+
+  load.style.display  = 'inline-flex';
+  out.style.display   = 'none';
+  doBtn.disabled      = true;
+  status.textContent  = '';
+
+  // Split into chunks of max 4000 chars to avoid API limit
+  const CHUNK = 4000;
+  const chunks = [];
+  for (let s = 0; s < rawText.length; s += CHUNK) {
+    chunks.push(rawText.slice(s, s + CHUNK));
+  }
+
+  try {
+    const translated = [];
+    for (let c = 0; c < chunks.length; c++) {
+      status.textContent = chunks.length > 1 ? `Translating part ${c+1}/${chunks.length}…` : '';
+      const res  = await fetch(`${API}/api/translate`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({text: chunks[c], target_lang: lang})
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Translation failed');
+      translated.push(data.translated);
+    }
+    out.textContent  = translated.join(' ');
+    out.style.display = 'block';
+    status.textContent = chunks.length > 1 ? `✅ Translated in ${chunks.length} parts` : '✅ Done';
+  } catch(e) {
+    out.textContent   = '❌ Translation failed: ' + e.message;
+    out.style.display = 'block';
+    status.textContent = '';
+  } finally {
+    load.style.display = 'none';
+    doBtn.disabled     = false;
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function formatAnswer(text) {
+  let t = escHtml(text);
+  t = t.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  return t;
+}
+function toggleExpand(i) {
+  const el = document.getElementById(`ans-${i}`);
+  const expanded = el.classList.toggle('expanded');
+  // find button
+  const btns = el.nextElementSibling?.querySelectorAll('.btn-action');
+  if (btns?.[0]) btns[0].innerHTML = expanded
+    ? '<i class="fa-solid fa-compress"></i> Collapse'
+    : '<i class="fa-solid fa-expand"></i> Expand';
+}
+function copyAnswer(i, btn) {
+  const el = document.getElementById(`ans-${i}`);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy'; }, 2000);
+  });
+}
+function clearQuery() { document.getElementById('queryInput').value = ''; document.getElementById('queryInput').focus(); }
+function fillQuery(title, tag) {
+  document.getElementById('queryInput').value = title;
+  selectTag(tag);
+  document.getElementById('queryInput').scrollIntoView({behavior:'smooth', block:'center'});
+}
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return String(s).replace(/'/g,"\\'").replace(/\n/g,' '); }
+
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+function addHistory(query, tag, count) {
+  searchHistory.unshift({query, tag, count});
+  searchHistory = searchHistory.slice(0, 10);
+  localStorage.setItem('sm_history', JSON.stringify(searchHistory));
+  renderHistory();
+}
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (!searchHistory.length) { el.innerHTML = '<p style="font-size:.8rem;color:var(--muted);font-weight:500;">No searches yet.</p>'; return; }
+  el.innerHTML = searchHistory.map(h => `
+    <div class="history-item" onclick="fillQuery('${escAttr(h.query)}','${h.tag}')">
+      <span class="history-tag-badge">${h.tag}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(h.query)}</span>
+    </div>`).join('');
+}
+
+// ── TOP TAGS ──────────────────────────────────────────────────────────────────
+function renderTopTags(tags) {
+  const top5  = [...tags].sort((a,b) => b.count - a.count).slice(0,5);
+  const maxCt = top5[0].count;
+  document.getElementById('topTagsChart').innerHTML = top5.map(t => `
+    <div class="mb-2">
+      <div class="d-flex justify-content-between" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:4px;font-weight:600;">
+        <span>${t.name}</span><span>${t.count}</span>
+      </div>
+      <div class="score-bar-track">
+        <div class="score-bar-fill fill-fusion" style="width:${(t.count/maxCt*100).toFixed(1)}%;transition:width 1.2s ease;"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const wrap = document.getElementById('toastWrap');
+  const el   = document.createElement('div');
+  el.className = 'toast-msg';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────────────────────────
+document.getElementById('queryInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) doSearch();
+});
+
+init();
+</script>
+</body>
+</html>
